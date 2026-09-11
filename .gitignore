@@ -1,0 +1,35 @@
+# Dados fisiológicos — nunca entram no histórico
+data/
+out/
+scratch/
+*.edf
+ecg_raw.csv
+rr_intervals.csv
+metrics.json
+RR_*.txt
+ECG_*.txt
+HR_*.txt
+ACC_*.txt
+participants.csv
+ground_truth.csv
+session_map.csv
+
+# Ambiente
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Notebooks — só scratch, nunca entregável
+*.ipynb
+
+# Nota: reference/ É versionado — é a fonte do design system,
+# necessária para reconstruir o tema e o DESIGN_NOTES.md.
+
+# Sistema
+.DS_Store
+Thumbs.db
