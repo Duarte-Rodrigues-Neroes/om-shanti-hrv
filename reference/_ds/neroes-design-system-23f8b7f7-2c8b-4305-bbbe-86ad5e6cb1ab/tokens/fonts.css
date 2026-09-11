@@ -1,0 +1,5 @@
+/* Neroes webfonts — Google-hosted.
+   Sora, IBM Plex Mono, and Newsreader are the exact brand families
+   (all available on Google Fonts; no substitution). If Neroes licenses
+   self-hosted binaries later, replace this @import with @font-face rules. */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@1,6..72,400..500&display=swap');

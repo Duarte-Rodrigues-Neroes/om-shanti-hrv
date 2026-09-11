@@ -1,0 +1,69 @@
+/* ─── Neroes color tokens ───────────────────────────────────────────
+   Dark, instrument-grade. Black is not a brand color — the dark base
+   is Petrol Ink. Cool accent triad (teal / green / blue) + one warm
+   brass accent used sparingly. */
+
+:root {
+  /* Brand accents (from the logo) */
+  --teal:  #2E9296;   /* primary accent */
+  --green: #479B7E;
+  --blue:  #3A67AE;
+  --brass: #B8873C;   /* warm accent — sparingly, for energy / vision */
+
+  /* Luminous variants — chart lines & glows on dark */
+  --teal-bright:  #43BEC3;
+  --green-bright: #5BBC99;
+  --blue-bright:  #5B8AD4;
+  --brass-bright: #D4A455;
+
+  /* Dim variants — fills, tints on dark (alpha over ink) */
+  --teal-dim:  rgba(46, 146, 150, 0.16);
+  --green-dim: rgba(71, 155, 126, 0.16);
+  --blue-dim:  rgba(58, 103, 174, 0.16);
+  --brass-dim: rgba(184, 135, 60, 0.14);
+
+  /* Petrol ink ladder — surfaces, deep → raised */
+  --ink-900: #0C1D24;  /* inset wells, chart beds */
+  --ink-800: #10262F;
+  --ink-700: #152E38;  /* Petrol Ink — page base */
+  --ink-600: #1B3A46;  /* cards */
+  --ink-500: #224552;  /* raised / hover */
+  --petrol:  #2B5A66;  /* wordmark petrol */
+
+  /* Light context (print, marketing "paper" sections) */
+  --paper:      #F3F5F5;
+  --paper-2:    #E8EDED;
+  --ink-on-paper:   #16333D;
+  --text-2-on-paper:#51707A;
+
+  /* Text on dark */
+  --text-1: #E9F2F3;  /* primary */
+  --text-2: #A9BFC5;  /* secondary */
+  --text-3: #6E8B93;  /* muted */
+  --on-accent: #0E2129;  /* text on solid teal / brass */
+
+  /* Hairlines & dividers — low contrast */
+  --border-1: rgba(169, 191, 197, 0.16);  /* default 1px border */
+  --border-2: rgba(169, 191, 197, 0.28);  /* hover / focus-adjacent */
+  --divider:  rgba(169, 191, 197, 0.09);
+
+  /* Semantic — signal quality & state.
+     good/caution map to brand green/brass; --signal-poor is an
+     intentional addition (harmonized ember; no red in the logo). */
+  --signal-good:    var(--green);
+  --signal-caution: var(--brass);
+  --signal-poor:    #C4685A;
+  --signal-poor-dim: rgba(196, 104, 90, 0.16);
+
+  /* Semantic aliases */
+  --surface-page:    var(--ink-700);
+  --surface-card:    var(--ink-600);
+  --surface-raised:  var(--ink-500);
+  --surface-inset:   var(--ink-900);
+  --surface-overlay: var(--ink-600);
+  --accent:          var(--teal);
+  --accent-bright:   var(--teal-bright);
+  --text-body:       var(--text-2);
+  --text-heading:    var(--text-1);
+  --text-label:      var(--text-3);
+}

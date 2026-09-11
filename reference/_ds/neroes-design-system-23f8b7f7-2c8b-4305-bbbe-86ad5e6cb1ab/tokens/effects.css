@@ -1,0 +1,37 @@
+/* ─── Neroes effects tokens ─────────────────────────────────────────
+   Thin lines, quiet shadows, luminous data. Pills for interactive
+   elements; small radii for panels (PCB corners, not bubbles). */
+
+:root {
+  /* Radii */
+  --radius-xs:   4px;
+  --radius-sm:   6px;    /* inputs, chips inside dense UI */
+  --radius-md:   10px;   /* cards, panels */
+  --radius-lg:   14px;   /* modals, hero panels */
+  --radius-pill: 999px;  /* buttons, badges, switches */
+
+  /* Hairlines */
+  --line: 1px solid var(--border-1);
+  --line-strong: 1px solid var(--border-2);
+  --line-divider: 1px solid var(--divider);
+
+  /* Shadows — quiet; depth comes from surface steps, not big blurs */
+  --shadow-1: 0 1px 2px rgba(6, 16, 20, 0.4);
+  --shadow-2: 0 8px 24px rgba(6, 16, 20, 0.45);
+  --shadow-overlay: 0 24px 64px rgba(6, 16, 20, 0.6);
+
+  /* Luminous glows — data & live states only, never chrome */
+  --glow-teal:  0 0 16px rgba(67, 190, 195, 0.28);
+  --glow-green: 0 0 16px rgba(91, 188, 153, 0.25);
+  --glow-blue:  0 0 16px rgba(91, 138, 212, 0.25);
+  --glow-brass: 0 0 16px rgba(212, 164, 85, 0.25);
+
+  /* Focus */
+  --focus-ring: 0 0 0 1px var(--surface-page), 0 0 0 3px var(--teal);
+
+  /* Motion — calm, no bounce */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1); /* @kind other */
+  --duration-fast: 120ms; /* @kind other */
+  --duration-base: 200ms; /* @kind other */
+  --duration-slow: 360ms; /* @kind other */
+}

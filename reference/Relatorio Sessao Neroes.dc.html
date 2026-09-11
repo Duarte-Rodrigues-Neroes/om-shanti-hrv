@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/neroes-design-system-23f8b7f7-2c8b-4305-bbbe-86ad5e6cb1ab/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/neroes-design-system-23f8b7f7-2c8b-4305-bbbe-86ad5e6cb1ab/tokens/colors.css">
+<link rel="stylesheet" href="_ds/neroes-design-system-23f8b7f7-2c8b-4305-bbbe-86ad5e6cb1ab/tokens/typography.css">
+<link rel="stylesheet" href="_ds/neroes-design-system-23f8b7f7-2c8b-4305-bbbe-86ad5e6cb1ab/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/neroes-design-system-23f8b7f7-2c8b-4305-bbbe-86ad5e6cb1ab/tokens/effects.css">
+<link rel="stylesheet" href="_ds/neroes-design-system-23f8b7f7-2c8b-4305-bbbe-86ad5e6cb1ab/tokens/base.css">
+<link rel="stylesheet" href="_ds/neroes-design-system-23f8b7f7-2c8b-4305-bbbe-86ad5e6cb1ab/styles.css">
+<script src="_ds/neroes-design-system-23f8b7f7-2c8b-4305-bbbe-86ad5e6cb1ab/_ds_bundle.js"></script>
+<style>
+  body { margin: 0; background: #0C1D24; }
+  a { color: #43BEC3; text-decoration: none; }
+  a:hover { color: #2E9296; }
+  @media print { body { background: #152E38; } .om-sheet { border: 0 !important; } }
+</style>
+</helmet>
+
+<div style="background:#0C1D24; padding:32px 16px 64px; font-family:'Sora',system-ui,sans-serif; display:flex; justify-content:center;">
+<div class="om-sheet" style="width:100%; max-width:880px; background:#152E38; border:1px solid rgba(169,191,197,0.16); border-radius:10px; overflow:hidden;">
+
+  <div style="background:#0B333C; padding:22px 40px; display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;">
+    <img src="assets/neroes-lockup-dark.png" alt="neroes" style="height:52px; width:auto; display:block;">
+    <div style="text-align:right; display:flex; flex-direction:column; gap:5px;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">Relatório de sessão</span>
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; letter-spacing:0.14em; color:#A9BFC5;">{{ meta.code }}</span>
+    </div>
+  </div>
+
+  <div style="padding:44px 40px 36px; border-bottom:1px solid rgba(169,191,197,0.09);">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+      <span style="width:6px; height:6px; border-radius:50%; background:#2E9296; display:block;"></span>
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#2E9296;">{{ meta.festivalLabel }}</span>
+    </div>
+    <h1 style="font-family:'Sora',sans-serif; font-size:42px; font-weight:600; letter-spacing:-0.025em; line-height:1.12; color:#E9F2F3; margin:0 0 16px; text-wrap:pretty;">O impacto do mantra no cérebro</h1>
+    <p style="font-family:'Sora',sans-serif; font-size:15px; font-weight:400; line-height:1.6; color:#A9BFC5; margin:0; max-width:58ch; text-wrap:pretty;">Este relatório reúne o que o headset neroes registou enquanto ouviste o mantra na nossa banca. Doze biomarcadores cerebrais, cada um comparado com o teu próprio estado de repouso antes da sessão.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:rgba(169,191,197,0.09); border:1px solid rgba(169,191,197,0.16); border-radius:6px; overflow:hidden; margin-top:32px;">
+      <div style="background:#152E38; padding:14px 16px; display:flex; flex-direction:column; gap:6px;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">Participante</span>
+        <span style="font-family:'Sora',sans-serif; font-size:14px; color:#E9F2F3;">{{ participant.name }}</span>
+      </div>
+      <div style="background:#152E38; padding:14px 16px; display:flex; flex-direction:column; gap:6px;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">Data · hora</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.06em; color:#E9F2F3; font-variant-numeric:tabular-nums;">{{ session.datetime }}</span>
+      </div>
+      <div style="background:#152E38; padding:14px 16px; display:flex; flex-direction:column; gap:6px;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">Duração</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.06em; color:#E9F2F3; font-variant-numeric:tabular-nums;">{{ session.duration }}</span>
+      </div>
+      <div style="background:#152E38; padding:14px 16px; display:flex; flex-direction:column; gap:6px;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">Mantra</span>
+        <span style="font-family:'Sora',sans-serif; font-size:14px; color:#E9F2F3;">{{ session.mantra }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:40px 40px 8px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">01 — Resumo</span>
+      <span style="flex:1; height:1px; background:rgba(169,191,197,0.09);"></span>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px;">
+      <sc-for list="{{ headline }}" as="h" hint-placeholder-count="3">
+        <div style="background:#1B3A46; border:1px solid rgba(169,191,197,0.16); border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:12px; break-inside:avoid;">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">{{ h.label }}</span>
+          <div style="display:flex; align-items:baseline; gap:8px;">
+            <span style="font-family:'Sora',sans-serif; font-size:36px; font-weight:600; letter-spacing:-0.03em; line-height:1; color:#E9F2F3; font-variant-numeric:tabular-nums;">{{ h.value }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.1em; color:#6E8B93;">{{ h.unit }}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="width:6px; height:6px; border-radius:50%; display:block; background:{{ h.color }};"></span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.08em; font-variant-numeric:tabular-nums; color:{{ h.color }};">{{ h.delta }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#6E8B93;">vs repouso</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  
+
+  
+
+  <div style="padding:36px 40px 8px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:8px;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">02 — OS DOZE BIOMARCADORES</span>
+      <span style="flex:1; height:1px; background:rgba(169,191,197,0.09);"></span>
+    </div>
+    <p style="font-family:'Sora',sans-serif; font-size:14px; line-height:1.6; color:#A9BFC5; margin:0 0 18px; max-width:60ch;">Cada cartão mostra a evolução do biomarcador durante a sessão, o valor em repouso e sob mantra, e o que a variação significa.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px;">
+      <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="12">
+        <div style="background:#1B3A46; border:1px solid rgba(169,191,197,0.16); border-radius:10px; padding:18px; display:flex; flex-direction:column; gap:14px; break-inside:avoid;">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+            <div style="display:flex; flex-direction:column; gap:4px; min-width:0;">
+              <span style="font-family:'Sora',sans-serif; font-size:15px; font-weight:600; letter-spacing:-0.01em; color:#E9F2F3; text-wrap:pretty;">{{ m.name }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.12em; color:#6E8B93;">{{ m.basis }}</span>
+            </div>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#6E8B93; flex:none; padding-top:3px;">{{ m.n }}</span>
+          </div>
+
+          <div style="background:#0C1D24; border-radius:6px; padding:8px;">
+            {{ m.spark }}
+          </div>
+
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:10px;">
+            <div style="display:flex; align-items:baseline; gap:7px;">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E8B93; font-variant-numeric:tabular-nums;">{{ m.baseline }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E8B93;">→</span>
+              <span style="font-family:'Sora',sans-serif; font-size:22px; font-weight:600; letter-spacing:-0.02em; color:#E9F2F3; line-height:1; font-variant-numeric:tabular-nums;">{{ m.value }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.1em; color:#6E8B93;">{{ m.unit }}</span>
+            </div>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.06em; padding:3px 9px; border-radius:999px; font-variant-numeric:tabular-nums; color:{{ m.deltaColor }}; background:{{ m.deltaBg }};">{{ m.delta }}</span>
+          </div>
+
+          <p style="font-family:'Sora',sans-serif; font-size:12.5px; line-height:1.55; color:#A9BFC5; margin:0; padding-top:12px; border-top:1px solid rgba(169,191,197,0.09); text-wrap:pretty;">{{ m.interpretation }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="padding:36px 40px 8px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:18px;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">05 — Leitura da sessão</span>
+      <span style="flex:1; height:1px; background:rgba(169,191,197,0.09);"></span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px; max-width:66ch;">
+      <sc-for list="{{ reading }}" as="p" hint-placeholder-count="3">
+        <p style="font-family:'Sora',sans-serif; font-size:15px; line-height:1.68; color:#A9BFC5; margin:0; text-wrap:pretty;">{{ p.text }}</p>
+      </sc-for>
+    </div>
+    
+  </div>
+
+  <div style="padding:36px 40px 8px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:18px;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">03 — O QUE TREINAR A SEGUIR</span>
+      <span style="flex:1; height:1px; background:rgba(169,191,197,0.09);"></span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:1px; background:rgba(169,191,197,0.09); border:1px solid rgba(169,191,197,0.16); border-radius:10px; overflow:hidden;">
+      <sc-for list="{{ recommendations }}" as="r" hint-placeholder-count="3">
+        <div style="background:#152E38; padding:18px 20px; display:flex; gap:16px; align-items:flex-start; break-inside:avoid;">
+          <span style="width:7px; height:7px; border-radius:50%; display:block; margin-top:7px; flex:none; background:{{ r.color }};"></span>
+          <div style="display:flex; flex-direction:column; gap:5px; min-width:0;">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:#A9BFC5;">{{ r.title }}</span>
+            <span style="font-family:'Sora',sans-serif; font-size:14px; line-height:1.6; color:#A9BFC5; text-wrap:pretty;">{{ r.text }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="padding:36px 40px 40px;">
+    <div style="border-top:1px solid rgba(169,191,197,0.16); border-bottom:1px solid rgba(169,191,197,0.16); padding:32px 0; display:flex; gap:16px; align-items:flex-start;">
+      <span style="width:7px; height:7px; border-radius:50%; background:#B8873C; display:block; margin-top:12px; flex:none;"></span>
+      <p style="font-family: 'Newsreader',Georgia,serif; font-style: italic; font-size: 24px; line-height: 1.42; color: #E9F2F3; margin: 0; max-width: 38ch; text-wrap: pretty; width: 692px; height: 61px">A saúde mental devia ser tão treinável quanto a saúde física.</p>
+    </div>
+  </div>
+
+  <sc-if value="{{ showAnnexes }}" hint-placeholder-val="{{ true }}">
+  
+
+  <div style="padding:36px 40px 8px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:18px;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">Anexo B — Glossário</span>
+      <span style="flex:1; height:1px; background:rgba(169,191,197,0.09);"></span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px 28px;">
+      <sc-for list="{{ glossary }}" as="g" hint-placeholder-count="8">
+        <div style="display:flex; flex-direction:column; gap:5px; break-inside:avoid;">
+          
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.14em; color:#E9F2F3;">{{ g.term }}</span><span style="font-family:'Sora',sans-serif; font-size:13px; line-height:1.55; color:#6E8B93;">{{ g.def }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
+  <div style="padding:44px 40px; margin-top:36px; background:#0B333C; border-top:1px solid rgba(169,191,197,0.16);">
+    <h2 style="font-family:'Sora',sans-serif; font-size:26px; font-weight:600; letter-spacing:-0.02em; line-height:1.2; color:#E9F2F3; margin:0 0 12px; text-wrap:pretty;">{{ cta.heading }}</h2>
+    <p style="font-family:'Sora',sans-serif; font-size:15px; line-height:1.6; color:#A9BFC5; margin:0 0 26px; max-width:52ch; text-wrap:pretty;">{{ cta.intro }}</p>
+    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:26px;">
+      <sc-for list="{{ cta.items }}" as="c" hint-placeholder-count="3">
+        <div style="display:flex; gap:12px; align-items:baseline;">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:14px; color:#43BEC3; flex:none;">→</span>
+          <span style="font-family:'Sora',sans-serif; font-size:14.5px; line-height:1.55; color:#E9F2F3; text-wrap:pretty;">{{ c.text }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+      <a href="{{ cta.href }}" style="font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; background:#2E9296; color:#0E2129; padding:11px 22px; border-radius:999px; display:inline-block;" style-hover="background:#43BEC3;">{{ cta.buttonLabel }}</a>
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:#B8873C; border:1px solid rgba(184,135,60,0.45); padding:10px 18px; border-radius:999px;">Código {{ cta.code }}</span>
+    </div>
+  </div>
+
+  <div style="padding:32px 40px 40px; background:#0B333C; border-top:1px solid rgba(169,191,197,0.09); display:flex; flex-direction:column; gap:18px;">
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <img src="assets/neroes-lockup-dark.png" alt="neroes" style="height:34px; width:auto; display:block; border-radius:4px;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:#6E8B93;">Lisboa · Mental Training Platform</span>
+    </div>
+    <p style="font-family:'Sora',sans-serif; font-size:12px; line-height:1.6; color:#6E8B93; margin:0; max-width:70ch;">Não é um dispositivo médico; não diagnostica, cura nem trata qualquer condição. Os valores deste relatório descrevem uma única sessão de curta duração em ambiente de festival e não substituem avaliação profissional.</p>
+    <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#6E8B93;">{{ meta.footerCode }}</span>
+  </div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;data&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;SessionReportData&quot;,&quot;default&quot;:null},&quot;showAnnexes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Secções&quot;}}">
+class Component extends DCLogic {
+  // ═══════════════════════════════════════════════════════════════
+  // ÚNICO PONTO DE INJEÇÃO DE DADOS
+  // No Claude Code: substituir este objecto (ou passar a prop `data`
+  // com a mesma forma). Nada mais no ficheiro precisa de mudar.
+  //
+  // metrics[]: { name, basis, unit, baseline, value, dec, good, max,
+  //              series: [n…] | null, interpretation: "" }
+  //   good: "up" = subir é favorável · "down" = descer é favorável · "flat"
+  //   series: valores na mesma unidade, do início ao fim da sessão.
+  //           null → sparkline sintetizada entre baseline e value.
+  //   interpretation: texto escrito pelo Claude Code a partir dos dados.
+  //           "" → é gerada uma frase factual de reserva.
+  // ═══════════════════════════════════════════════════════════════
+  sample = {
+    meta: {
+      code: "FBE-2026-0147",
+      footerCode: "Relatório FBE-2026-0147 · gerado 10 SET 2026 16:04 WEST",
+      festivalLabel: "Festival Bem Estar 2026 ·neroes",
+      attribution: "Protocolo FBE-01 · 4 canais secos · 256 Hz"
+    },
+    participant: { name: "Rui Almeida" },
+    session: { datetime: "10 SET 2026 · 16:02", duration: "08:30 MIN", mantra: "Sri Vitthala", signalQuality: "94%" },
+    trace: { calm: null, focus: null, mantraFrom: 0.14, mantraTo: 0.86 },
+    bands: [
+      { label: "Delta 1–4 Hz",  pct: 26.8, color: "#3A67AE" },
+      { label: "Teta 4–8 Hz",   pct: 22.7, color: "#5B8AD4" },
+      { label: "Alfa 8–12 Hz",  pct: 28.6, color: "#43BEC3" },
+      { label: "Beta 12–30 Hz", pct: 17.3, color: "#479B7E" },
+      { label: "Gama 30–45 Hz", pct: 4.6,  color: "#B8873C" }
+    ],
+    metrics: [
+      { name: "Relaxamento", basis: "Alfa relativo frontocentral · fração de 1–45 Hz", unit: "%", baseline: 21.4, value: 28.6, dec: 1, max: 45, good: "up", series: null, interpretation: "" },
+      { name: "Ativação mental", basis: "Beta relativo frontal · fração de 1–45 Hz", unit: "%", baseline: 24.9, value: 17.3, dec: 1, max: 40, good: "down", series: null, interpretation: "" },
+      { name: "Índice de relaxamento", basis: "Razão alfa / beta", unit: "%", baseline: 0.86, value: 1.65, dec: 2, max: 3, good: "up", series: null, interpretation: "" },
+      { name: "Calma alerta", basis: "SMR relativo central · fração de 1–45 Hz", unit: "%", baseline: 9.1, value: 12.4, dec: 1, max: 20, good: "up", series: null, interpretation: "" },
+      { name: "Atenção internalizada", basis: "Teta frontal · fração de 1–45 Hz", unit: "%", baseline: 18.2, value: 22.7, dec: 1, max: 40, good: "up", series: null, interpretation: "" },
+      { name: "Balanço emocional", basis: "Assimetria alfa frontal (ALAY) · ln(µV²) F4 − F3", unit: "%", baseline: -0.12, value: 0.34, dec: 2, max: 1, good: "up", series: null, interpretation: "" },
+      { name: "Sincronia com o mantra", basis: "Coerência alfa1 F3–F4 · MSC", unit: "MSC", baseline: 0.41, value: 0.63, dec: 2, max: 1, good: "up", series: null, interpretation: "" },
+      { name: "Atenção interna sincronizada", basis: "Coerência teta2 F3–F4 · MSC", unit: "MSC", baseline: 0.36, value: 0.52, dec: 2, max: 1, good: "up", series: null, interpretation: "" },
+      { name: "Sincronia sem artefacto", basis: "Coerência imaginária alfa1", unit: "0–1", baseline: 0.22, value: 0.38, dec: 2, max: 1, good: "up", series: null, interpretation: "" },
+      { name: "Sincronia com atraso", basis: "wPLI alfa1 desenviesado", unit: "0–1", baseline: 0.18, value: 0.31, dec: 2, max: 1, good: "up", series: null, interpretation: "" },
+      { name: "Estado global do sinal", basis: "Expoente aperiódico 1/f", unit: "slope", baseline: 1.28, value: 1.46, dec: 2, max: 2.5, good: "up", series: null, interpretation: "" },
+      { name: "Potência de fundo", basis: "Offset aperiódico · log10(µV²)", unit: "log10", baseline: 1.04, value: 0.92, dec: 2, max: 2, good: "flat", series: null, interpretation: "" }
+    ],
+    reading: [
+      { text: "[Explicação simples generalizada do que aconteceu na sessão usando sempre os nomes comuns e de dicas para o futuro a pessoa continuar a cuidar da sua saúde mental.]" },
+      { text: "" },
+      { text: "" }
+    ],
+    method: [
+      { label: "Aquisição", text: "Headset neroes, 4 canais secos (F3, F4, C3, C4), referência mastóide, 256 Hz." },
+      { label: "Pré-processamento", text: "Filtro passa-banda 1–45 Hz, notch 50 Hz, rejeição automática de épocas com amplitude > 100 µV." },
+      { label: "Segmentação", text: "Épocas de 4 s com 50% de sobreposição. Repouso = 60 s iniciais de olhos fechados; mantra = restante sessão." },
+      { label: "Estimação espectral", text: "Welch com janela de Hann; potência absoluta por banda convertida em fração de 1–45 Hz." },
+      { label: "Conectividade", text: "MSC, coerência imaginária e wPLI desenviesado calculados em alfa1 e teta2 entre F3 e F4." },
+      { label: "Componente aperiódica", text: "Ajuste 1/f sobre 2–40 Hz; expoente e offset estimados após remoção dos picos periódicos." }
+    ],
+    glossary: [
+      { term: "Alfa (8–12 Hz)", def: "Ritmo dominante em repouso relaxado com atenção interna. Aumenta quando a vigilância externa diminui." },
+      { term: "Beta (12–30 Hz)", def: "Ligado a processamento activo e alerta; níveis elevados acompanham tensão cognitiva." },
+      { term: "Teta (4–8 Hz)", def: "Associado a estados de absorção, imaginação e meditação profunda." },
+      { term: "SMR (12–15 Hz)", def: "Ritmo sensório-motor sobre o córtex central: calma sem sonolência." },
+      { term: "", def: "" },
+      { term: "MSC", def: "" },
+      { term: "", def: "" },
+      { term: "", def: "" },
+      { term: "", def: "" },
+      { term: "", def: "" },
+      { term: "Repouso", def: "Minuto de referência antes do mantra, com que todos os valores são comparados." },
+      { term: "", def: "" }
+    ],
+    cta: {
+      heading: "Isto foi 6 minutos. Imagina 6 semanas.",
+      intro: "Queremos continuar esta experiência contigo — e levar a neurotecnologia ao local de trabalho, mudando a forma como cuidamos da saúde mental.",
+      items: [
+        { text: "Segue a neroes para acompanhares o que estamos a construir." },
+        { text: "Usa o código FBE2026 para acesso a um desconto exclusivo." },
+        { text: "Queres levar esta tecnologia para a tua empresa? Fala connosco." }
+      ],
+      buttonLabel: "Falar com a neroes",
+      href: "https://neroes.tech",
+      code: "FBE2026"
+    }
+  };
+
+  data() { return this.props.data || this.sample; }
+
+  // ── séries sintéticas de reserva ────────────────────────────────
+  gen(kind) {
+    const out = [];
+    for (let i = 0; i <= 72; i++) {
+      const t = i / 72;
+      let v;
+      if (kind === "calm") {
+        v = t < 0.14 ? 43 + Math.sin(i * 0.9) * 3
+          : t < 0.72 ? 43 + ((t - 0.14) / 0.58) * 29 + Math.sin(i * 0.7) * 3.1 + Math.sin(i * 0.21) * 2.2
+          : 72 + Math.sin(i * 0.6) * 2.4 - (t - 0.72) * 6;
+      } else {
+        v = t < 0.14 ? 56 + Math.sin(i * 1.1) * 2.4
+          : t < 0.6 ? 56 - ((t - 0.14) / 0.46) * 14 + Math.sin(i * 0.8) * 2.6
+          : 42 + Math.sin(i * 0.5) * 2.2;
+      }
+      out.push(Math.max(0, Math.min(100, v)));
+    }
+    return out;
+  }
+
+  genMetric(m, seed) {
+    const out = [], span = m.value - m.baseline, amp = Math.abs(span || m.value * 0.06) * 0.22;
+    for (let i = 0; i <= 32; i++) {
+      const t = i / 32;
+      const ramp = t < 0.16 ? 0 : t > 0.7 ? 1 : (t - 0.16) / 0.54;
+      const eased = ramp * ramp * (3 - 2 * ramp);
+      out.push(m.baseline + span * eased + Math.sin(i * (0.7 + seed * 0.13) + seed) * amp + Math.sin(i * 0.31 + seed * 2) * amp * 0.6);
+    }
+    return out;
+  }
+
+  path(series, W, H, PL, PT, lo, hi) {
+    const n = series.length - 1, r = (hi - lo) || 1;
+    return series.map((v, i) => {
+      const x = PL + (i / n) * W;
+      const y = PT + (1 - (v - lo) / r) * H;
+      return (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1);
+    }).join(" ");
+  }
+
+  spark(m, i, color) {
+    const e = React.createElement;
+    const s = (m.series && m.series.length > 1) ? m.series : this.genMetric(m, i);
+    const VW = 260, VH = 56, PL = 2, PT = 6, W = VW - 4, H = VH - 14;
+    const lo = Math.min.apply(null, s), hi = Math.max.apply(null, s);
+    const pad = (hi - lo) * 0.18 || 1;
+    const d = this.path(s, W, H, PL, PT, lo - pad, hi + pad);
+    const area = d + " L" + (PL + W) + " " + (PT + H) + " L" + PL + " " + (PT + H) + " Z";
+    const last = s[s.length - 1];
+    const lastY = PT + (1 - (last - (lo - pad)) / ((hi + pad) - (lo - pad))) * H;
+    const gid = "sp" + i;
+    return e("svg", { viewBox: "0 0 " + VW + " " + VH, width: "100%", style: { display: "block", overflow: "visible" }, "aria-hidden": "true" }, [
+      e("defs", { key: "d" }, [
+        e("linearGradient", { key: "g", id: gid, x1: "0", y1: "0", x2: "0", y2: "1" }, [
+          e("stop", { key: 0, offset: "0%", stopColor: color, stopOpacity: 0.26 }),
+          e("stop", { key: 1, offset: "100%", stopColor: color, stopOpacity: 0 })
+        ])
+      ]),
+      e("line", { key: "b", x1: PL, x2: PL + W, y1: PT + H, y2: PT + H, stroke: "rgba(169,191,197,0.09)", strokeWidth: 1 }),
+      e("line", { key: "m", x1: PL + W * 0.16, x2: PL + W * 0.16, y1: PT - 2, y2: PT + H, stroke: "rgba(169,191,197,0.28)", strokeDasharray: "2 4", strokeWidth: 1 }),
+      e("path", { key: "a", d: area, fill: "url(#" + gid + ")" }),
+      e("path", { key: "l", d: d, fill: "none", stroke: color, strokeWidth: 1.5, strokeLinejoin: "round", strokeLinecap: "round" }),
+      e("circle", { key: "c", cx: PL + W, cy: lastY, r: 2.6, fill: color })
+    ]);
+  }
+
+  chart(d) {
+    const e = React.createElement;
+    const calm = (d.trace && d.trace.calm) || this.gen("calm");
+    const focus = (d.trace && d.trace.focus) || this.gen("focus");
+    const VW = 760, VH = 250, PL = 40, PR = 14, PT = 14, PB = 44;
+    const W = VW - PL - PR, H = VH - PT - PB;
+    const mFrom = PL + ((d.trace && d.trace.mantraFrom) || 0.14) * W;
+    const mTo = PL + ((d.trace && d.trace.mantraTo) || 0.86) * W;
+    const calmPath = this.path(calm, W, H, PL, PT, 0, 100);
+    const area = calmPath + " L" + (PL + W).toFixed(1) + " " + (PT + H) + " L" + PL + " " + (PT + H) + " Z";
+    const grid = [0, 25, 50, 75, 100].map(v =>
+      e("g", { key: "g" + v }, [
+        e("line", { key: "l", x1: PL, x2: PL + W, y1: PT + (1 - v / 100) * H, y2: PT + (1 - v / 100) * H, stroke: "rgba(169,191,197,0.16)", strokeWidth: 1, strokeDasharray: "1 5" }),
+        e("text", { key: "t", x: PL - 10, y: PT + (1 - v / 100) * H + 3.5, textAnchor: "end", fill: "#6E8B93", fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.08em" }, String(v))
+      ])
+    );
+    const ticks = ["00:00", "02:00", "04:00", "06:00", "08:30"].map((lab, i, a) =>
+      e("text", { key: "x" + i, x: PL + (i / (a.length - 1)) * W, y: PT + H + 20, textAnchor: i === 0 ? "start" : i === a.length - 1 ? "end" : "middle", fill: "#6E8B93", fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.1em" }, lab)
+    );
+    const lastY = PT + (1 - calm[calm.length - 1] / 100) * H;
+    return e("svg", { viewBox: "0 0 " + VW + " " + VH, width: "100%", style: { display: "block", overflow: "visible" }, role: "img", "aria-label": "Traçado de relaxamento e ativação mental durante a sessão" }, [
+      e("defs", { key: "d" }, [
+        e("linearGradient", { key: "f", id: "nrFill", x1: "0", y1: "0", x2: "0", y2: "1" }, [
+          e("stop", { key: 0, offset: "0%", stopColor: "#43BEC3", stopOpacity: 0.28 }),
+          e("stop", { key: 1, offset: "100%", stopColor: "#43BEC3", stopOpacity: 0 })
+        ]),
+        e("filter", { key: "g", id: "nrGlow", x: "-20%", y: "-40%", width: "140%", height: "180%" }, [
+          e("feGaussianBlur", { key: 0, stdDeviation: 3, result: "b" }),
+          e("feMerge", { key: 1 }, [e("feMergeNode", { key: 0, in: "b" }), e("feMergeNode", { key: 1, in: "SourceGraphic" })])
+        ])
+      ]),
+      e("rect", { key: "band", x: mFrom, y: PT, width: mTo - mFrom, height: H, fill: "rgba(46,146,150,0.07)" }),
+      e("line", { key: "b1", x1: mFrom, x2: mFrom, y1: PT, y2: PT + H, stroke: "rgba(169,191,197,0.28)", strokeDasharray: "3 4", strokeWidth: 1 }),
+      e("line", { key: "b2", x1: mTo, x2: mTo, y1: PT, y2: PT + H, stroke: "rgba(169,191,197,0.28)", strokeDasharray: "3 4", strokeWidth: 1 }),
+      e("g", { key: "grid" }, grid),
+      e("g", { key: "ticks" }, ticks),
+      e("text", { key: "ml", x: (mFrom + mTo) / 2, y: PT + H + 36, textAnchor: "middle", fill: "#2E9296", fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.22em" }, "MANTRA"),
+      e("text", { key: "rl", x: PL + 2, y: PT + H + 36, textAnchor: "start", fill: "#6E8B93", fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.22em" }, "REPOUSO"),
+      e("path", { key: "area", d: area, fill: "url(#nrFill)" }),
+      e("path", { key: "focus", d: this.path(focus, W, H, PL, PT, 0, 100), fill: "none", stroke: "#5B8AD4", strokeWidth: 1.5, strokeOpacity: 0.75, strokeLinejoin: "round", strokeLinecap: "round" }),
+      e("path", { key: "calm", d: calmPath, fill: "none", stroke: "#43BEC3", strokeWidth: 1.5, strokeLinejoin: "round", strokeLinecap: "round", filter: "url(#nrGlow)" }),
+      e("circle", { key: "dot", cx: PL + W, cy: lastY, r: 3, fill: "#43BEC3", filter: "url(#nrGlow)" })
+    ]);
+  }
+
+  num(v, dec) { return v.toFixed(dec == null ? 1 : dec); }
+
+  fallbackText(m, delta, favourable) {
+    const dir = delta > 0 ? "subiu" : delta < 0 ? "desceu" : "manteve-se";
+    const pct = m.baseline ? Math.abs(delta / m.baseline) * 100 : 0;
+    const mag = pct >= 25 ? "de forma marcada" : pct >= 8 ? "de forma consistente" : "ligeiramente";
+    const sense = favourable === null ? "Variação dentro da margem esperada para uma sessão curta."
+      : favourable ? "Direcção associada a um estado mais calmo e estável."
+      : "Direcção contrária à esperada numa resposta de relaxamento.";
+    return "Durante o mantra " + dir + " " + mag + " face ao repouso. " + sense;
+  }
+
+  // Recomendações por regras sobre os dados
+  buildRecs(metrics) {
+    const by = {}; metrics.forEach(m => { by[m.name] = m; });
+    const g = (n) => by[n] ? by[n].value - by[n].baseline : 0;
+    const out = [];
+    if (g("Relaxamento") > 0 && g("Ativação mental") < 0) {
+      out.push({ title: "Consolidar", color: "#5BBC99", text: "O teu cérebro respondeu ao mantra na direcção esperada. Repetir a mesma prática 8 a 10 minutos por dia, sempre à mesma hora, é o caminho mais rápido para que a resposta apareça mais cedo em cada sessão." });
+    } else {
+      out.push({ title: "Dar mais tempo", color: "#B8873C", text: "A resposta de relaxamento ainda não se destacou do repouso. Numa primeira exposição em ambiente ruidoso isso é comum — sessões mais longas e num espaço calmo dão à medida margem para aparecer." });
+    }
+    if (g("Sincronia com o mantra") > 0.05) {
+      out.push({ title: "Ancorar no som", color: "#2E9296", text: "A sincronia entre hemisférios acompanhou o mantra. Manter o mesmo som como âncora — em vez de variar de prática para prática — tende a reforçar esse acoplamento." });
+    } else {
+      out.push({ title: "Experimentar outra âncora", color: "#2E9296", text: "A sincronia entre hemisférios variou pouco. Vale testar outro mantra, ou respiração contada, para encontrar a âncora a que o teu cérebro responde melhor." });
+    }
+    if (g("Calma alerta") <= 0) {
+      out.push({ title: "Postura e sono", color: "#B8873C", text: "O ritmo sensório-motor não subiu. Costuma responder a sono suficiente e a uma postura estável e sem tensão nos ombros — dois factores fáceis de ajustar antes da próxima sessão." });
+    }
+    if (g("Balanço emocional") > 0) {
+      out.push({ title: "Medir de novo", color: "#5BBC99", text: "O balanço emocional moveu-se favoravelmente. Uma segunda medição noutro dia dirá se foi um estado pontual ou o início de uma tendência." });
+    }
+    return out.slice(0, 4);
+  }
+
+  renderVals() {
+    const d = this.data();
+    const GOOD = "#5BBC99", POOR = "#C4685A", FLAT = "#A9BFC5";
+    const bands = (d.bands || []).map(b => ({ ...b, pct: b.pct.toFixed(1) + "%", w: b.pct * 2.4 + "%" }));
+
+    const metrics = (d.metrics || []).map((m, i) => {
+      const delta = m.value - m.baseline;
+      const favourable = m.good === "flat" ? null : (m.good === "up" ? delta > 0 : delta < 0);
+      const color = favourable === null ? "#5B8AD4" : favourable ? "#43BEC3" : "#C4685A";
+      const dc = favourable === null ? FLAT : favourable ? GOOD : POOR;
+      return {
+        n: String(i + 1).padStart(2, "0"),
+        name: m.name,
+        basis: m.basis,
+        unit: m.unit,
+        baseline: this.num(m.baseline, m.dec),
+        value: this.num(m.value, m.dec),
+        delta: (delta > 0 ? "+" : delta < 0 ? "−" : "") + this.num(Math.abs(delta), m.dec),
+        deltaColor: dc,
+        deltaBg: favourable === null ? "rgba(169,191,197,0.10)" : favourable ? "rgba(71,155,126,0.16)" : "rgba(196,104,90,0.16)",
+        interpretation: m.interpretation && m.interpretation.trim() ? m.interpretation : this.fallbackText(m, delta, favourable),
+        spark: this.spark(m, i, color)
+      };
+    });
+
+    const pick = (name) => (d.metrics || []).find(m => m.name === name);
+    const head = ["Relaxamento", "Índice de relaxamento", "Balanço emocional"].map(n => pick(n)).filter(Boolean);
+    const headline = head.map(m => {
+      const delta = m.value - m.baseline;
+      const fav = m.good === "flat" ? null : (m.good === "up" ? delta > 0 : delta < 0);
+      return {
+        label: m.name, value: this.num(m.value, m.dec), unit: m.unit,
+        delta: (delta > 0 ? "+" : delta < 0 ? "−" : "") + this.num(Math.abs(delta), m.dec),
+        color: fav === null ? FLAT : fav ? GOOD : POOR
+      };
+    });
+
+    return {
+      meta: d.meta, participant: d.participant, session: d.session,
+      headline, bands, metrics,
+      reading: d.reading, method: d.method, glossary: d.glossary, cta: d.cta,
+      recommendations: (d.recommendations && d.recommendations.length) ? d.recommendations : this.buildRecs(d.metrics || []),
+      traceChart: this.chart(d),
+      showAnnexes: this.props.showAnnexes ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

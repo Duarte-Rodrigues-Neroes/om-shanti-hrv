@@ -1,0 +1,44 @@
+/* ─── Neroes typography tokens ──────────────────────────────────────
+   Sora — headings and body.
+   IBM Plex Mono — labels, nav, data readouts (uppercase, wide tracking).
+   Newsreader italic — editorial "vision" quotes ONLY. */
+
+:root {
+  --font-sans:  'Sora', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --font-mono:  'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
+  --font-serif: 'Newsreader', 'Georgia', serif;   /* italic, vision voice only */
+
+  /* Scale */
+  --text-2xs: 10px;
+  --text-xs:  11px;    /* mono labels */
+  --text-sm:  13px;
+  --text-base:15px;
+  --text-md:  17px;
+  --text-lg:  21px;
+  --text-xl:  26px;
+  --text-2xl: 34px;
+  --text-3xl: 46px;
+  --text-4xl: 62px;
+
+  /* Weights (Sora) */
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+
+  /* Leading */
+  --leading-tight:  1.12;   /* display */
+  --leading-heading:1.25;
+  --leading-body:   1.6;
+  --leading-mono:   1.5;
+
+  /* Tracking */
+  --tracking-display: -0.025em;  /* Sora large sizes */
+  --tracking-heading: -0.015em;
+  --tracking-body:     0;
+  --tracking-label:    0.14em;   /* mono labels, uppercase */
+  --tracking-label-wide: 0.22em; /* section eyebrows */
+
+  /* Composite: the mono label style (nav, readout captions, table heads) */
+  --label-font: var(--weight-medium) var(--text-xs) / 1.4 var(--font-mono);
+}

@@ -1,0 +1,25 @@
+/* ─── Neroes spacing tokens ─────────────────────────────────────────
+   4px base. Instrument density: compact controls, generous sections. */
+
+:root {
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  32px;
+  --space-8:  40px;
+  --space-9:  48px;
+  --space-10: 64px;
+  --space-11: 80px;
+  --space-12: 96px;
+
+  /* Component rhythm */
+  --pad-control-y: 8px;    /* inside buttons / inputs */
+  --pad-control-x: 18px;
+  --pad-card: 20px;
+  --gap-inline: 8px;       /* icon ↔ label */
+  --gap-stack: 12px;
+  --gap-section: 64px;
+}
