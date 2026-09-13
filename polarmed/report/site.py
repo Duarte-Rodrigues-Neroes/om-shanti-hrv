@@ -594,6 +594,18 @@ const T = {json.dumps({
 const LAYOUT = {json.dumps(theme.plotly_layout())};
 const CFG = {{displayModeBar:false, responsive:true}};
 
+/* A publish mode may strip beat-level series. Panels that need them must say
+   so, not throw and take every later panel down with them. */
+function hasSeries(o, key) {{
+  return o && Array.isArray(o[key]) && o[key].length > 0;
+}}
+function omitted(id, what) {{
+  document.getElementById(id).innerHTML =
+    '<div style="padding:38px 18px;text-align:center;font-family:' +
+    "'IBM Plex Mono',monospace" + ';font-size:11px;letter-spacing:.14em;' +
+    'text-transform:uppercase;color:{theme.TEXT_3}">' + what + '</div>';
+}}
+
 function baseLayout(extra) {{
   return Object.assign(JSON.parse(JSON.stringify(LAYOUT)), extra || {{}});
 }}
@@ -602,6 +614,10 @@ function baseLayout(extra) {{
 let tacoMode = 'all', tacoRaw = false;
 function drawTaco(mode) {{
   tacoMode = mode;
+  if (!DATA.recordings.some(r => hasSeries(r.tacogram, 'rr_ms'))) {{
+    omitted('taco', 'séries individuais omitidas nesta versão');
+    return;
+  }}
   const traces = DATA.recordings
     .filter(r => mode === 'all' || r.kind === mode)
     .map((r, i) => ({{
@@ -635,9 +651,9 @@ document.getElementById('rawToggle').onclick = function () {{
 /* ---------------- 03b excerto ampliado ---------------- */
 (function () {{
   const pick = k => DATA.recordings.filter(r => r.kind === k && r.in_aggregates
-    && r.excerpt && r.excerpt.t_s.length > 20);
+    && hasSeries(r.excerpt, 't_s') && r.excerpt.t_s.length > 20);
   const chosen = [pick('canto')[0], pick('repouso')[0]].filter(Boolean);
-  if (!chosen.length) return;
+  if (!chosen.length) {{ omitted('exc', 'séries individuais omitidas nesta versão'); return; }}
   const traces = chosen.map(r => ({{
     x: r.excerpt.t_s, y: r.excerpt.rr_ms,
     name: r.band_id + ' · ' + r.kind, type: 'scatter', mode: 'lines',
@@ -653,7 +669,9 @@ document.getElementById('rawToggle').onclick = function () {{
 
 /* ---------------- 04 espectros ---------------- */
 function drawSpec(scale) {{
-  const traces = DATA.recordings.map(r => ({{
+  const withSpectra = DATA.recordings.filter(r => hasSeries(r.spectrum, 'psd'));
+  if (!withSpectra.length) {{ omitted('spec', 'espectros indisponíveis'); return; }}
+  const traces = withSpectra.map(r => ({{
     x: r.spectrum.freq_hz, y: r.spectrum.psd, name: r.band_id + ' · ' + r.kind,
     type: 'scatter', mode: 'lines',
     line: {{width: 1.6, color: r.kind === 'canto' ? T.chant : T.rest}},
@@ -708,7 +726,9 @@ document.querySelectorAll('#specCtrl button').forEach(b => b.onclick = () => {{
 
 /* ---------------- 06 janela deslizante ---------------- */
 (function () {{
-  const chant = DATA.recordings.filter(r => r.kind === 'canto');
+  const chant = DATA.recordings.filter(
+    r => r.kind === 'canto' && hasSeries(r.sliding, 'slow_hf'));
+  if (!chant.length) {{ omitted('slide', 'série deslizante indisponível'); return; }}
   const traces = [];
   chant.forEach((r, i) => {{
     traces.push({{
