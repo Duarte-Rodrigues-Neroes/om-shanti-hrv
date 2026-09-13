@@ -14,24 +14,28 @@ def parse(argv: list[str]):
 
 
 class TestOverrideCollection:
-    def test_rest_end_also_moves_the_guard_start(self):
-        """The guard is *defined* as the gap between rest end and mantra start.
-
-        Moving one edge without the other would leave a hole in the timeline,
-        which the config validator rejects - so the CLI moves both.
-        """
+    def test_mantra_window_maps_to_a_duration(self):
+        """Phases are anchored on the end, so the flag carries a duration."""
         overrides = collect_overrides(
-            parse(["run", "--source", "s", "--out", "o", "--rest-end", "2"])
+            parse(["run", "--source", "s", "--out", "o", "--mantra-min", "20"])
         )
-        assert overrides["phases.rest.end_min"] == 2.0
-        assert overrides["phases.guard.start_min"] == 2.0
+        assert overrides == {"phases.mantra_min": 20.0}
 
-    def test_mantra_start_also_moves_the_guard_end(self):
+    def test_guard_and_baseline_floor_map_to_durations(self):
         overrides = collect_overrides(
-            parse(["run", "--source", "s", "--out", "o", "--mantra-start", "7"])
+            parse(
+                ["run", "--source", "s", "--out", "o",
+                 "--guard-min", "5", "--min-baseline-min", "8"]
+            )
         )
-        assert overrides["phases.guard.end_min"] == 7.0
-        assert overrides["phases.mantra.start_min"] == 7.0
+        assert overrides["phases.guard_min"] == 5.0
+        assert overrides["phases.min_baseline_min"] == 8.0
+
+    def test_noisy_start_discard_can_be_switched_off(self):
+        overrides = collect_overrides(
+            parse(["run", "--source", "s", "--out", "o", "--no-discard-noisy-start"])
+        )
+        assert overrides["phases.discard_noisy_start.enabled"] is False
 
     def test_unset_flags_produce_no_overrides(self):
         assert collect_overrides(parse(["run", "--source", "s", "--out", "o"])) == {}
@@ -64,7 +68,7 @@ class TestOverrideCollection:
                     "run",
                     "--source", "s",
                     "--out", "o",
-                    "--rest-start", "0.5",
+                    "--mantra-min", "18",
                     "--epoch-min", "2",
                     "--align", "group_start",
                     "--hrv-window", "45",
@@ -75,7 +79,7 @@ class TestOverrideCollection:
             )
         )
         assert overrides == {
-            "phases.rest.start_min": 0.5,
+            "phases.mantra_min": 18.0,
             "epochs.duration_min": 2.0,
             "alignment.mode": "group_start",
             "sliding.window_s": 45.0,
@@ -93,8 +97,8 @@ class TestDryRun:
                 "run",
                 "--source", str(tmp_path / "missing"),
                 "--out", str(out),
-                "--rest-end", "2",
-                "--mantra-start", "6",
+                "--mantra-min", "20",
+                "--guard-min", "5",
                 "--dry-run",
             ]
         )
@@ -102,13 +106,11 @@ class TestDryRun:
 
         manifest = json.loads((out / "run_manifest.json").read_text(encoding="utf-8"))
         offsets = manifest["phase_offsets"]
-        assert offsets["rest_end_min"] == 2.0
-        assert offsets["guard_start_min"] == 2.0
-        assert offsets["guard_end_min"] == 6.0
-        assert offsets["mantra_start_min"] == 6.0
-        assert offsets["summary"] == (
-            "rest 0-2 min | guard 2-6 min (excluida) | mantra 6+ min"
-        )
+        assert offsets["anchor"] == "end_of_valid_rr"
+        assert offsets["mantra_min"] == 20.0
+        assert offsets["guard_min"] == 5.0
+        assert offsets["baseline_matched_to_mantra"] is True
+        assert "ultimos 20 min" in offsets["summary"]
 
     def test_manifest_records_provenance(self, tmp_path):
         out = tmp_path / "run"
@@ -178,7 +180,7 @@ class TestRefusals:
 
     def test_refuses_incoherent_cut(self, config_factory, tmp_path, capsys):
         path = config_factory(
-            lambda d: d["phases"]["guard"].__setitem__("start_min", 4.0)
+            lambda d: d["phases"].__setitem__("mantra_min", 0.0)
         )
         code = main(
             [
@@ -190,7 +192,7 @@ class TestRefusals:
             ]
         )
         assert code == 2
-        assert "guard must start where rest ends" in capsys.readouterr().err
+        assert "mantra_min must be positive" in capsys.readouterr().err
 
     def test_missing_config_file_is_reported_cleanly(self, tmp_path, capsys):
         code = main(

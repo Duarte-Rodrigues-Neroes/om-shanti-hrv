@@ -10,12 +10,10 @@ from polarmed.config import apply_overrides, load_config
 
 def test_default_config_is_valid():
     config = load_config()
-    assert config.phases.rest.start_min == 0.0
-    assert config.phases.rest.end_min == 3.0
-    assert config.phases.guard.start_min == 3.0
-    assert config.phases.guard.end_min == 6.0
-    assert config.phases.mantra.start_min == 6.0
-    assert config.phases.mantra.end_min is None
+    assert config.phases.mantra_min == 15.0
+    assert config.phases.guard_min == 3.0
+    assert config.phases.min_baseline_min == 5.0
+    assert config.phases.discard_noisy_start.enabled is True
 
 
 def test_primary_endpoint_is_required(config_factory):
@@ -34,20 +32,15 @@ def test_primary_endpoint_rejects_malformed_date(config_factory):
 
 def test_phase_summary_reflects_the_cut():
     config = load_config()
-    assert config.phase_summary() == (
-        "rest 0-3 min | guard 3-6 min (excluida) | mantra 6+ min"
-    )
+    summary = config.phase_summary()
+    assert "ultimos 15 min" in summary
+    assert "guard 3 min (excluida)" in summary
 
 
 def test_config_hash_changes_with_the_cut():
     """An old report must be traceable to its offsets, so the hash must move."""
     baseline = load_config()
-    recut = load_config(
-        overrides={
-            "phases.rest.end_min": 2.0,
-            "phases.guard.start_min": 2.0,
-        }
-    )
+    recut = load_config(overrides={"phases.mantra_min": 20.0})
     assert baseline.content_hash() != recut.content_hash()
 
 
@@ -55,71 +48,62 @@ def test_config_hash_is_stable_across_loads():
     assert load_config().content_hash() == load_config().content_hash()
 
 
-class TestPhaseContiguity:
-    """rest -> guard -> mantra must tile the timeline exactly.
+class TestEndAnchoredPhases:
+    """The protocol is anchored on the end of the recording.
 
-    A gap drops data and an overlap double-counts it; both are invisible in the
-    CSV output, which is why they are rejected at load time.
+    Only one thing is known for certain - the final stretch of each readout is
+    chanting - so the config carries durations, not absolute offsets.
     """
 
-    def test_gap_between_rest_and_guard_is_rejected(self, config_factory):
-        path = config_factory(
-            lambda d: d["phases"]["guard"].__setitem__("start_min", 4.0)
-        )
-        with pytest.raises(ValidationError, match="guard must start where rest ends"):
+    def test_non_positive_mantra_window_is_rejected(self, config_factory):
+        path = config_factory(lambda d: d["phases"].__setitem__("mantra_min", 0.0))
+        with pytest.raises(ValidationError, match="mantra_min must be positive"):
             load_config(path)
 
-    def test_gap_between_guard_and_mantra_is_rejected(self, config_factory):
-        path = config_factory(
-            lambda d: d["phases"]["mantra"].__setitem__("start_min", 7.0)
-        )
-        with pytest.raises(ValidationError, match="mantra must start where guard ends"):
+    def test_negative_guard_is_rejected(self, config_factory):
+        path = config_factory(lambda d: d["phases"].__setitem__("guard_min", -1.0))
+        with pytest.raises(ValidationError, match="guard_min cannot be negative"):
             load_config(path)
 
-    def test_overlap_is_rejected(self, config_factory):
+    def test_baseline_floor_above_the_mantra_window_is_rejected(self, config_factory):
+        """The baseline is matched to the mantra, so such a floor is unreachable."""
         path = config_factory(
-            lambda d: d["phases"]["guard"].__setitem__("start_min", 2.0)
+            lambda d: d["phases"].__setitem__("min_baseline_min", 20.0)
         )
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValidationError, match="cannot exceed"):
             load_config(path)
 
-    def test_inverted_window_is_rejected(self, config_factory):
-        path = config_factory(
-            lambda d: d["phases"]["rest"].__setitem__("end_min", -1.0)
-        )
-        with pytest.raises(ValidationError):
-            load_config(path)
-
-    def test_bounded_mantra_is_rejected(self, config_factory):
-        """mantra must run to the end of the recording, not to a fixed minute."""
-        path = config_factory(
-            lambda d: d["phases"]["mantra"].__setitem__("end_min", 30.0)
-        )
-        with pytest.raises(ValidationError, match="mantra.end_min must be null"):
-            load_config(path)
+    def test_a_zero_guard_is_allowed(self, config_factory):
+        """Legitimate choice: drop the transition window entirely."""
+        path = config_factory(lambda d: d["phases"].__setitem__("guard_min", 0.0))
+        assert load_config(path).phases.guard_min == 0.0
 
 
 class TestOverrides:
     def test_applies_nested_leaf(self, default_config_dict):
         result = apply_overrides(
-            default_config_dict, {"phases.rest.end_min": 2.5}
+            default_config_dict, {"phases.discard_noisy_start.tolerance": 3.0}
         )
-        assert result["phases"]["rest"]["end_min"] == 2.5
+        assert result["phases"]["discard_noisy_start"]["tolerance"] == 3.0
+
+    def test_applies_top_level_leaf(self, default_config_dict):
+        result = apply_overrides(default_config_dict, {"phases.mantra_min": 20.0})
+        assert result["phases"]["mantra_min"] == 20.0
 
     def test_does_not_mutate_the_input(self, default_config_dict):
-        before = default_config_dict["phases"]["rest"]["end_min"]
-        apply_overrides(default_config_dict, {"phases.rest.end_min": 99.0})
-        assert default_config_dict["phases"]["rest"]["end_min"] == before
+        before = default_config_dict["phases"]["mantra_min"]
+        apply_overrides(default_config_dict, {"phases.mantra_min": 99.0})
+        assert default_config_dict["phases"]["mantra_min"] == before
 
     def test_none_is_ignored(self, default_config_dict):
         """Unset CLI flags arrive as None and must not clobber the config."""
-        result = apply_overrides(default_config_dict, {"phases.rest.end_min": None})
-        assert result["phases"]["rest"]["end_min"] == 3.0
+        result = apply_overrides(default_config_dict, {"phases.mantra_min": None})
+        assert result["phases"]["mantra_min"] == 15.0
 
     def test_unknown_path_raises(self, default_config_dict):
         """A mistyped flag must never pass silently into a published report."""
         with pytest.raises(KeyError):
-            apply_overrides(default_config_dict, {"phases.rest.no_such_key": 1.0})
+            apply_overrides(default_config_dict, {"phases.no_such_key": 1.0})
 
     def test_unknown_branch_raises(self, default_config_dict):
         with pytest.raises(KeyError):

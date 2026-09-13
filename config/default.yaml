@@ -14,16 +14,30 @@ primary_endpoint:
   direction: increase          # hipotese direcional declarada
   declared_on: "2026-09-11"
 
-# --- Fases (sec. 0 e 4.13). Minutos desde t_align --------------------------
-# A janela guard e EXCLUIDA de todas as metricas e agregados, mas continua
-# visivel nos graficos, sombreada e rotulada como transicao.
+# --- Fases: ANCORADAS NO FIM da gravacao -----------------------------------
+# O protocolo real nao registou o inicio do repouso, varios participantes nao o
+# fizeram, e alguns ainda caminhavam quando a gravacao comecou. A unica
+# certeza e que o troco final de cada leitura e canto de OM. Por isso a linha
+# temporal e construida de tras para a frente, a partir do ultimo batimento
+# VALIDO (nao da duracao declarada, que em varias gravacoes e muito maior do
+# que a serie RR que existe de facto):
+#
+#   [ descarte ][ baseline ][ guard ][        mantra        ]
+#
+# A baseline tem a MESMA duracao do mantra: comparar espectros estimados sobre
+# janelas de duracao diferente introduz uma diferenca sistematica que nao e
+# fisiologia (PLAN.md sec. 4.3).
 phases:
-  rest:      { start_min: 0.0, end_min: 3.0 }
-  guard:     { start_min: 3.0, end_min: 6.0 }
-  mantra:    { start_min: 6.0, end_min: null }    # null = ate ao fim
-  rest_post:                                      # sec. 4.1b — oportunista
+  mantra_min: 15.0           # ultimos N minutos = canto (dado do protocolo)
+  guard_min: 3.0             # transicao, EXCLUIDA de todas as metricas
+  min_baseline_min: 5.0      # abaixo disto a baseline e insuficiente
+  # Descarte do inicio ruidoso: detetado dos dados, nao fixado.
+  discard_noisy_start:
     enabled: true
-    min_duration_s: 120.0
+    window_s: 60.0
+    step_s: 15.0
+    max_scan_s: 600.0
+    tolerance: 2.0           # x a taxa de correcao mediana do resto
 
 # --- Epocas dentro da fase de mantra (sec. 6.2) ---------------------------
 epochs:

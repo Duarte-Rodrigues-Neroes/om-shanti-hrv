@@ -44,50 +44,47 @@ class PrimaryEndpoint(_Base):
         return v
 
 
-class PhaseWindow(_Base):
-    start_min: float
-    end_min: float | None = None  # None means "until the end of the recording"
+class DiscardNoisyStartConfig(_Base):
+    """How much of the opening to drop, decided from the data.
 
-    @model_validator(mode="after")
-    def _ordered(self) -> PhaseWindow:
-        if self.end_min is not None and self.end_min <= self.start_min:
-            raise ValueError(
-                f"end_min ({self.end_min}) must exceed start_min ({self.start_min})"
-            )
-        return self
+    Participants were still settling - some walking - when recording began, so
+    the first minutes carry motion artefact. A fixed cut would be arbitrary and
+    would differ in effect between a 20-minute and a 45-minute recording.
+    """
 
-
-class RestPostConfig(_Base):
     enabled: bool = True
-    min_duration_s: float = 120.0
+    window_s: float = 60.0
+    step_s: float = 15.0
+    max_scan_s: float = 600.0
+    tolerance: float = 2.0
 
 
 class PhasesConfig(_Base):
-    rest: PhaseWindow
-    guard: PhaseWindow
-    mantra: PhaseWindow
-    rest_post: RestPostConfig = Field(default_factory=RestPostConfig)
+    """End-anchored protocol (see ``polarmed.signal.phases``).
+
+    The only fact known about the protocol is that the final stretch of each
+    readout is chanting, so boundaries are measured backwards from the last
+    valid beat rather than forwards from the recording start.
+    """
+
+    mantra_min: float = 15.0
+    guard_min: float = 3.0
+    min_baseline_min: float = 5.0
+    discard_noisy_start: DiscardNoisyStartConfig = Field(
+        default_factory=DiscardNoisyStartConfig
+    )
 
     @model_validator(mode="after")
-    def _contiguous(self) -> PhasesConfig:
-        """rest -> guard -> mantra must tile the timeline with no gap or overlap.
-
-        A gap would silently drop data; an overlap would double-count it. Both are
-        invisible in the output, so they are rejected here rather than downstream.
-        """
-        if self.rest.end_min != self.guard.start_min:
+    def _positive(self) -> PhasesConfig:
+        if self.mantra_min <= 0:
+            raise ValueError("mantra_min must be positive")
+        if self.guard_min < 0:
+            raise ValueError("guard_min cannot be negative")
+        if self.min_baseline_min > self.mantra_min:
             raise ValueError(
-                f"guard must start where rest ends: rest.end_min={self.rest.end_min} "
-                f"but guard.start_min={self.guard.start_min}"
-            )
-        if self.guard.end_min != self.mantra.start_min:
-            raise ValueError(
-                f"mantra must start where guard ends: guard.end_min={self.guard.end_min} "
-                f"but mantra.start_min={self.mantra.start_min}"
-            )
-        if self.mantra.end_min is not None:
-            raise ValueError(
-                "mantra.end_min must be null (it runs to the end of the recording)"
+                f"min_baseline_min ({self.min_baseline_min}) cannot exceed "
+                f"mantra_min ({self.mantra_min}): the baseline is matched to the "
+                f"mantra window and could never reach the floor"
             )
         return self
 
@@ -254,11 +251,12 @@ class Config(_Base):
 
     def phase_summary(self) -> str:
         """One-line human-readable cut, for the report header and the log."""
-        rest, guard, mantra = self.phases.rest, self.phases.guard, self.phases.mantra
+        phases = self.phases
         return (
-            f"rest {rest.start_min:g}-{rest.end_min:g} min | "
-            f"guard {guard.start_min:g}-{guard.end_min:g} min (excluida) | "
-            f"mantra {mantra.start_min:g}+ min"
+            f"ancorado no fim | mantra = ultimos {phases.mantra_min:g} min | "
+            f"guard {phases.guard_min:g} min (excluida) | "
+            f"baseline {phases.mantra_min:g} min antes da guard "
+            f"(minimo {phases.min_baseline_min:g} min)"
         )
 
 

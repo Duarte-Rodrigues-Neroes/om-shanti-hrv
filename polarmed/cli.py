@@ -125,13 +125,35 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
 
 def _add_phase_arguments(parser: argparse.ArgumentParser) -> None:
     group = parser.add_argument_group(
-        "recorte de fases",
-        "Minutos desde o inicio de cada gravacao. A janela guard e o intervalo "
-        "entre --rest-end e --mantra-start, e e sempre excluida das metricas.",
+        "recorte de fases (ancorado no FIM da gravacao)",
+        "O protocolo so garante uma coisa: o troco final de cada leitura e "
+        "canto de OM. As fases sao medidas para tras a partir do ultimo "
+        "batimento valido. A baseline recebe a mesma duracao do mantra, para "
+        "que os espectros sejam comparaveis. A guard nunca entra nas metricas.",
     )
-    group.add_argument("--rest-start", type=float, default=None)
-    group.add_argument("--rest-end", type=float, default=None)
-    group.add_argument("--mantra-start", type=float, default=None)
+    group.add_argument(
+        "--mantra-min",
+        type=float,
+        default=None,
+        help="Duracao da janela de canto, em minutos a contar do fim (default 15).",
+    )
+    group.add_argument(
+        "--guard-min",
+        type=float,
+        default=None,
+        help="Transicao entre baseline e mantra, excluida das metricas (default 3).",
+    )
+    group.add_argument(
+        "--min-baseline-min",
+        type=float,
+        default=None,
+        help="Baseline mais curta do que isto e marcada como insuficiente (default 5).",
+    )
+    group.add_argument(
+        "--no-discard-noisy-start",
+        action="store_true",
+        help="Nao descartar o inicio ruidoso (por omissao e detetado dos dados).",
+    )
     group.add_argument("--epoch-min", type=float, default=None)
     group.add_argument(
         "--align", choices=["recording_start", "group_start"], default=None
@@ -148,10 +170,8 @@ def _add_phase_arguments(parser: argparse.ArgumentParser) -> None:
 def collect_overrides(args: argparse.Namespace) -> dict[str, Any]:
     """Translate CLI flags into dotted config paths.
 
-    ``--rest-end`` and ``--mantra-start`` also move the guard boundaries. The
-    guard is *defined* as the interval between the two, so moving one edge
-    without the other would leave a gap or an overlap in the timeline - which
-    the config validator rejects outright.
+    The phase flags carry *durations*, not absolute offsets, because the
+    timeline is anchored on the end of each recording rather than its start.
     """
     overrides: dict[str, Any] = {}
 
@@ -159,15 +179,11 @@ def collect_overrides(args: argparse.Namespace) -> dict[str, Any]:
         if value is not None:
             overrides[path] = value
 
-    put("phases.rest.start_min", getattr(args, "rest_start", None))
-    rest_end = getattr(args, "rest_end", None)
-    if rest_end is not None:
-        overrides["phases.rest.end_min"] = rest_end
-        overrides["phases.guard.start_min"] = rest_end
-    mantra_start = getattr(args, "mantra_start", None)
-    if mantra_start is not None:
-        overrides["phases.guard.end_min"] = mantra_start
-        overrides["phases.mantra.start_min"] = mantra_start
+    put("phases.mantra_min", getattr(args, "mantra_min", None))
+    put("phases.guard_min", getattr(args, "guard_min", None))
+    put("phases.min_baseline_min", getattr(args, "min_baseline_min", None))
+    if getattr(args, "no_discard_noisy_start", False):
+        overrides["phases.discard_noisy_start.enabled"] = False
 
     put("epochs.duration_min", getattr(args, "epoch_min", None))
     put("alignment.mode", getattr(args, "align", None))

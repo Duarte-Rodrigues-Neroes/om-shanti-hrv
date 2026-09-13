@@ -123,11 +123,12 @@ class RunManifest:
             # of an old report most needs, and digging them out of the full config
             # dump is exactly the friction that stops people from checking.
             "phase_offsets": {
-                "rest_start_min": cfg.phases.rest.start_min,
-                "rest_end_min": cfg.phases.rest.end_min,
-                "guard_start_min": cfg.phases.guard.start_min,
-                "guard_end_min": cfg.phases.guard.end_min,
-                "mantra_start_min": cfg.phases.mantra.start_min,
+                "anchor": "end_of_valid_rr",
+                "mantra_min": cfg.phases.mantra_min,
+                "guard_min": cfg.phases.guard_min,
+                "min_baseline_min": cfg.phases.min_baseline_min,
+                "baseline_matched_to_mantra": True,
+                "discard_noisy_start": cfg.phases.discard_noisy_start.enabled,
                 "epoch_min": cfg.epochs.duration_min,
                 "summary": cfg.phase_summary(),
             },
