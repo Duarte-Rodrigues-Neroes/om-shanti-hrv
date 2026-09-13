@@ -49,6 +49,25 @@ FILES: list[tuple[str, str, str, str, str]] = [
     ("HM11", "2026-09-12", "livre_1h", "rr_intervals.csv", "1JebvjhPbXHtmgCZqA1Fgy8tRWQ5LTCPY"),
     ("HM11", "2026-09-12", "livre_1h", "metrics.json", "1EZb8jodxzFM6JjYjN_eVzkeNFO9__6tw"),
     ("HM11", "2026-09-12", "livre_1h", "ecg_raw.csv", "1gl0YIw_Lpv1XlfXF5Jn9Qq60QS71jIDk"),
+    # --- rest_5min_manha: the only genuinely un-chanted recordings in the set ---
+    ("HM01", "2026-09-11", "rest_5min_manha", "rr_intervals.csv", "1xaBkp3nDrqOdlO2q9K6rc-2tTvjDNUJB"),
+    ("HM01", "2026-09-11", "rest_5min_manha", "metrics.json", "1Bvn2n0NANKEfOT6oBEyEUIicXbIkPlJE"),
+    ("HM01", "2026-09-11", "rest_5min_manha", "ecg_raw.csv", "12WThZmj3XHyvdciIKBECpGa2fbS0TplT"),
+    ("HM02", "2026-09-11", "rest_5min_manha", "rr_intervals.csv", "1Vlf2MbzeDCeMNDUIuCsucJj140X9hzHt"),
+    ("HM02", "2026-09-11", "rest_5min_manha", "metrics.json", "1zFP7NmjOmNs6PVku0cpknHzrVlaJ-iTr"),
+    ("HM02", "2026-09-11", "rest_5min_manha", "ecg_raw.csv", "1XmZIu75zoX7Mz2eL7QxWLzHagM33PVEt"),
+    ("HM02", "2026-09-11", "rest_5min_manha_2", "rr_intervals.csv", "1pUGsY4Wrh0KJY30TFgo3FPw6SifE9hEO"),
+    ("HM02", "2026-09-11", "rest_5min_manha_2", "metrics.json", "1-38klJaR1-1DyMd226gQeiNVAND2T1DF"),
+    ("HM02", "2026-09-11", "rest_5min_manha_2", "ecg_raw.csv", "1xudYnq5OF-VaJb1WzD2kz2y67ACevOj-"),
+    ("HM07", "2026-09-11", "rest_5min_manha", "rr_intervals.csv", "1NhOpz4wN7NvwDWOFiI4F8DCJIsSrPOMW"),
+    ("HM07", "2026-09-11", "rest_5min_manha", "metrics.json", "1n67wZ3jHtNdnoGWx2jAcx6QcMBGC9cbN"),
+    ("HM07", "2026-09-11", "rest_5min_manha", "ecg_raw.csv", "1HhnjSO5kOrZu2uLBTtEQWcDJamwmpf4B"),
+    ("HM09", "2026-09-11", "rest_5min_manha", "rr_intervals.csv", "1lqAwLr_ZposB5H70KjnHREzo7V334wUt"),
+    ("HM09", "2026-09-11", "rest_5min_manha", "metrics.json", "1h_KosNI9caaeIRBu3-mV1tAXGi2yoBGx"),
+    ("HM09", "2026-09-11", "rest_5min_manha", "ecg_raw.csv", "1_XfE9nuFapbO4hRcF7g2OHJa-Ya0dU5C"),
+    ("HM15", "2026-09-13", "rest_5min_manha", "rr_intervals.csv", "1QFkAkby2-ywkWo8K4jhWnp1I2MvhtXRy"),
+    ("HM15", "2026-09-13", "rest_5min_manha", "metrics.json", "1JMFytns8P_0CkalO4Dl7ZK930-OGHZuI"),
+    ("HM15", "2026-09-13", "rest_5min_manha", "ecg_raw.csv", "1GQMw5zytVW_SzToba7X24rDclkwrw5Nk"),
 ]
 
 

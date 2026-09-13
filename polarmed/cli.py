@@ -11,6 +11,7 @@ to the parameters that produced it.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ from polarmed import __version__
 from polarmed.config import Config, load_config
 from polarmed.logging_setup import get_logger, setup_logging
 from polarmed.manifest import RunManifest
+from polarmed.report.build import sanitise as sanitise_bundle
 
 # Config keys whose absence deserves an explanation rather than a bare
 # "field required" from the validator.
@@ -295,12 +297,59 @@ def command_run(args: argparse.Namespace) -> int:
         logger.info("dry-run: manifesto escrito em %s", path)
         return 0
 
-    manifest.write()
-    logger.error(
-        "A ingestao ainda nao esta implementada (Fase 2). "
-        "Use --dry-run para validar o recorte."
+    from polarmed.report.build import apply_publish_mode, build, write_json
+    from polarmed.report.site import render
+
+    bundle = build(args.source, config)
+    if not bundle["recordings"]:
+        logger.error("nenhuma gravacao utilizavel em %s", args.source)
+        for warning in bundle["warnings"]:
+            manifest.add_warning(warning)
+        manifest.write()
+        return 3
+
+    for warning in bundle["warnings"]:
+        logger.warning("%s", warning)
+        manifest.add_warning(warning)
+
+    # out/ is gitignored, so the full bundle stays there for re-analysis; only
+    # docs/ is filtered, because that is the artefact that gets shared.
+    json_path = out_dir / "bundle.json"
+    write_json(bundle, json_path)
+    logger.info("dados escritos em %s", json_path)
+
+    n_rest = sum(1 for r in bundle["recordings"] if r["kind"] == "repouso")
+    n_chant = sum(1 for r in bundle["recordings"] if r["kind"] == "canto")
+    logger.info(
+        "%d gravacoes: %d repouso, %d canto (%d fora dos agregados)",
+        len(bundle["recordings"]), n_rest, n_chant,
+        bundle["n_excluded_from_aggregates"],
     )
-    return 3
+
+    if not args.no_site:
+        published = apply_publish_mode(
+            json.loads(json.dumps(sanitise_bundle(bundle))),
+            config.report.publish_mode,
+        )
+        logger.info("publish_mode %s", config.report.publish_mode)
+        if published.get("omitted"):
+            logger.info("omitido de docs/: %s", ", ".join(published["omitted"]))
+        site_path = render(published, Path("docs") / "index.html")
+        size_mb = site_path.stat().st_size / 1024 / 1024
+        if size_mb > config.report.max_html_mb:
+            message = (
+                f"{site_path} tem {size_mb:.1f} MB, acima do orcamento de "
+                f"{config.report.max_html_mb:.0f} MB"
+            )
+            logger.error(message)
+            manifest.add_warning(message)
+            manifest.write()
+            return 4
+        logger.info("relatorio escrito em %s (%.2f MB)", site_path, size_mb)
+
+    manifest.write()
+    logger.info("concluido.")
+    return 0
 
 
 def command_inventory(args: argparse.Namespace) -> int:

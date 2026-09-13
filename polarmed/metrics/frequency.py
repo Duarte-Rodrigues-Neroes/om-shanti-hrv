@@ -94,11 +94,16 @@ def spectrum(
     return freqs, psd, int(n_segments)
 
 
+# numpy renamed trapz -> trapezoid in 2.0; we pin 1.26 for the wider wheel
+# coverage of the scientific stack, so bind whichever exists.
+_integrate = getattr(np, "trapezoid", None) or np.trapz
+
+
 def band_power(freqs: np.ndarray, psd: np.ndarray, lo: float, hi: float) -> float:
     band = (freqs >= lo) & (freqs < hi)
-    if not band.any():
+    if band.sum() < 2:
         return float("nan")
-    return float(np.trapezoid(psd[band], freqs[band]))
+    return float(_integrate(psd[band], freqs[band]))
 
 
 def summarise(
