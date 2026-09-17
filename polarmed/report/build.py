@@ -6,7 +6,10 @@ does no analysis and the same bundle can be dumped to JSON for inspection.
 
 from __future__ import annotations
 
+import hashlib
 import json
+import re
+import secrets
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -338,6 +341,34 @@ def build(source: Path, config: Config) -> dict[str, Any]:
     }
 
 
+ANON_SALT_PATH = Path(".anon_salt")
+
+# Compiled once, at module level, so the pattern is visible and testable rather
+# than buried in a call where an escaping slip goes unnoticed.
+BAND_ID_PATTERN = re.compile(r"\bHM\d{2,}\b")
+ISO_DATE_PATTERN = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+
+
+def _anon_salt() -> str:
+    """Per-project secret that makes pseudonyms stable but not reversible.
+
+    Kept out of git. Without it nobody can map a label back to a band id; with
+    it the same band keeps the same label across runs, so two versions of the
+    report can still be compared. A per-run random label would make that
+    impossible, which is the usual reason anonymisation gets abandoned.
+    """
+    if ANON_SALT_PATH.exists():
+        return ANON_SALT_PATH.read_text(encoding="utf-8").strip()
+    salt = secrets.token_hex(16)
+    ANON_SALT_PATH.write_text(salt, encoding="utf-8")
+    return salt
+
+
+def anonymise_label(band_id: str, salt: str) -> str:
+    digest = hashlib.sha256(f"{salt}:{band_id}".encode("utf-8")).hexdigest()
+    return "P" + str(int(digest[:6], 16) % 900 + 100)
+
+
 def apply_publish_mode(bundle: dict[str, Any], mode: str) -> dict[str, Any]:
     """Strip what must not leave the machine, per --publish-mode (PLAN.md 10).
 
@@ -345,8 +376,9 @@ def apply_publish_mode(bundle: dict[str, Any], mode: str) -> dict[str, Any]:
     ``aggregate``  drops every beat-level series. Derived statistics stay -
                    spectra, sliding metrics and summary values are not the raw
                    physiological record and cannot be turned back into one.
-    ``anonymous``  also replaces band ids with per-run random labels and drops
-                   the dates, which alone can identify who was in the room.
+    ``anonymous``  also replaces band ids with salted pseudonyms and drops every
+                   date. In a small cohort the date alone identifies who was in
+                   the room, which is why it goes even though it is not a name.
 
     Panels whose data is removed say so on the page rather than rendering empty.
     """
@@ -361,18 +393,35 @@ def apply_publish_mode(bundle: dict[str, Any], mode: str) -> dict[str, Any]:
             record[key] = {}
 
     if mode == "anonymous":
-        import random
-
-        rng = random.Random()
-        labels = {}
+        salt = _anon_salt()
+        labels = {
+            r["band_id"]: anonymise_label(r["band_id"], salt)
+            for r in bundle["recordings"]
+        }
+        # Bands that were skipped never reach `recordings`, but they are still
+        # named in the warnings. Label every id that appears anywhere, or the
+        # one band whose recording was too short is the one left identifiable.
+        for warning in bundle.get("warnings", []):
+            for found in BAND_ID_PATTERN.findall(warning):
+                labels.setdefault(found, anonymise_label(found, salt))
         for record in bundle["recordings"]:
-            original = record["band_id"]
-            if original not in labels:
-                labels[original] = f"P{rng.randrange(100, 1000)}"
-            record["band_id"] = labels[original]
+            label = labels[record["band_id"]]
+            record["band_id"] = label
             record["session_date"] = ""
             record["session_time"] = None
-            record["key"] = f"{labels[original]} · {record['measurement']}"
+            record["key"] = f"{label} · {record['measurement']}"
+
+        # The warning strings carry "HM02/2026-09-12/livre_1h" in plain text.
+        # Anonymising the structured fields while leaving these untouched would
+        # publish exactly what the mode exists to hide.
+        rewritten = []
+        for warning in bundle.get("warnings", []):
+            for original, label in labels.items():
+                warning = warning.replace(original, label)
+            warning = ISO_DATE_PATTERN.sub("<data>", warning)
+            rewritten.append(warning)
+        bundle["warnings"] = rewritten
+
         omitted += ["band_id", "session_date"]
 
     bundle["publish_mode"] = mode

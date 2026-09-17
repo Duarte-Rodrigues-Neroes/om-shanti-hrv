@@ -16,6 +16,7 @@ session_map.csv
 
 # Credenciais — NUNCA no historico
 drive_token.json
+.anon_salt
 *token*.json
 client_secret*.json
 credentials.json

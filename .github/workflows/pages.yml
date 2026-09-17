@@ -1,0 +1,74 @@
+name: Publicar relatorio no GitHub Pages
+
+# Publica o conteudo de docs/ tal como esta no repositorio.
+#
+# Nao corre o pipeline: os dados em bruto nunca entram no Git, por isso o
+# runner nao os tem e nao os pode ter. O docs/ e gerado localmente com
+#   python -m polarmed.cli run --source ./data/sessao --out ./out/publico \
+#       --publish-mode anonymous
+# e so o resultado ja anonimizado e versionado.
+
+on:
+  push:
+    branches: [main]
+    paths: ["docs/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ultima barreira antes de o relatorio ficar publico. Se um identificador
+      # real ou uma data de sessao chegar ao docs/, o deploy nao acontece.
+      - name: Verificar que docs/ esta anonimizado
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+
+          html = pathlib.Path("docs/index.html").read_text(encoding="utf-8")
+          problemas = []
+
+          ids = re.findall(r"\bHM\d{2,}\b", html)
+          if ids:
+              problemas.append(f"identificadores de banda reais: {sorted(set(ids))}")
+
+          datas = re.findall(r"\b20\d{2}-\d{2}-\d{2}\b", html)
+          if datas:
+              problemas.append(f"datas de sessao: {sorted(set(datas))}")
+
+          if '"publish_mode": "full"' in html:
+              problemas.append("gerado em --publish-mode full")
+
+          if problemas:
+              print("DEPLOY BLOQUEADO:")
+              for p in problemas:
+                  print(f"  - {p}")
+              sys.exit(1)
+          print("docs/ verificado: sem identificadores reais nem datas.")
+          PY
+
+  publicar:
+    needs: verificar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@v4
