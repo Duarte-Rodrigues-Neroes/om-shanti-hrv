@@ -19,9 +19,28 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-import numpy as np
-import pyqtgraph as pg
-from PySide6 import QtCore, QtGui, QtWidgets
+# Running a script inside tools/ puts tools/ on sys.path, not the repo root, so
+# `import polarmed` fails no matter which directory you launch from. Put the
+# repo root first, before any polarmed import.
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+try:
+    import numpy as np
+    import pyqtgraph as pg
+    from PySide6 import QtCore, QtGui, QtWidgets
+except ImportError as exc:  # almost always the wrong interpreter
+    sys.exit(
+        f"Falta uma dependencia: {exc.name}\n\n"
+        "Este visualizador precisa do venv do projeto. A partir da raiz:\n"
+        "    .\\.venv\\Scripts\\Activate.ps1\n"
+        "    python tools/cobertura_qt.py\n\n"
+        "Ou sem ativar:\n"
+        "    .\\.venv\\Scripts\\python.exe tools\\cobertura_qt.py\n\n"
+        "Se o venv ainda nao tem estes pacotes:\n"
+        "    pip install -r requirements.txt"
+    )
 
 from polarmed.config import load_config
 from polarmed.io.parsers import discover_measurements, load_measurement
@@ -324,11 +343,31 @@ class Window(QtWidgets.QMainWindow):
         )
 
 
+def resolve_source(argument: str | None) -> Path:
+    """Find the data folder whether launched from the repo root or an IDE.
+
+    A relative default is resolved against the repo root rather than the current
+    directory, because an IDE's working directory is rarely the repo root.
+    """
+    if argument:
+        return Path(argument).expanduser()
+    candidate = REPO_ROOT / "data" / "sessao"
+    return candidate if candidate.exists() else Path("data/sessao")
+
+
 def main() -> int:
-    source = Path(sys.argv[1] if len(sys.argv) > 1 else "data/sessao")
+    source = resolve_source(sys.argv[1] if len(sys.argv) > 1 else None)
+    if not source.exists():
+        print(
+            f"ERRO: {source} nao existe.\n"
+            "Descarregue os dados primeiro:\n"
+            "    python tools/fetch_drive_session.py"
+        )
+        return 1
+
     recs = load(source)
     if not recs:
-        print(f"nenhuma gravacao em {source}")
+        print(f"nenhuma gravacao com rr_intervals.csv em {source}")
         return 1
 
     app = QtWidgets.QApplication(sys.argv)
