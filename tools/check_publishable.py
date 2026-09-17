@@ -74,20 +74,32 @@ def check(path: Path) -> list[str]:
 
 
 def main() -> int:
-    path = Path(sys.argv[1] if len(sys.argv) > 1 else "docs/index.html")
-    if not path.exists():
-        print(f"ERRO: {path} nao existe")
+    if len(sys.argv) > 1:
+        targets = [Path(a) for a in sys.argv[1:]]
+    else:
+        # Sem argumentos, verifica TODAS as paginas publicadas. Verificar so a
+        # index deixaria passar uma pagina nova que alguem acrescentasse.
+        targets = sorted(Path("docs").glob("*.html"))
+
+    if not targets:
+        print("ERRO: nenhuma pagina para verificar")
         return 1
 
-    problems = check(path)
-    if problems:
-        print("DEPLOY BLOQUEADO:")
-        for problem in problems:
-            print(f"  - {problem}")
-        return 1
-
-    print(f"{path} verificado: sem identificadores reais, datas ou RR individual.")
-    return 0
+    failed = False
+    for path in targets:
+        if not path.exists():
+            print(f"ERRO: {path} nao existe")
+            failed = True
+            continue
+        problems = check(path)
+        if problems:
+            print(f"DEPLOY BLOQUEADO — {path}:")
+            for problem in problems:
+                print(f"  - {problem}")
+            failed = True
+        else:
+            print(f"{path} verificado: sem identificadores reais, datas ou RR.")
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

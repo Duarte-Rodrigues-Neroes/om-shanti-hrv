@@ -33,7 +33,7 @@ jobs:
       # real, uma data de sessao ou uma serie RR individual chegar ao docs/, o
       # deploy nao acontece.
       - name: Verificar que docs/ esta anonimizado
-        run: python3 tools/check_publishable.py docs/index.html
+        run: python3 tools/check_publishable.py
 
   publicar:
     needs: verificar
